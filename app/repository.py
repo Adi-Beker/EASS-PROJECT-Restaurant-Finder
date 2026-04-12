@@ -1,50 +1,96 @@
 from __future__ import annotations
 
-from typing import Dict
-
 from app.models import Restaurant, RestaurantCreate
 
 
 class RestaurantRepository:
-    """In-memory storage for restaurants."""
-
     def __init__(self) -> None:
-        self._items: Dict[int, Restaurant] = {}
+        self._restaurants: list[Restaurant] = []
         self._next_id = 1
 
     def list(self) -> list[Restaurant]:
-        """Return all restaurants."""
-        return list(self._items.values())
+        return self._restaurants.copy()
+
+    def get(self, restaurant_id: int) -> Restaurant | None:
+        for restaurant in self._restaurants:
+            if restaurant.id == restaurant_id:
+                return restaurant
+        return None
+
+    def _is_duplicate(
+        self,
+        name: str,
+        city: str,
+        country: str,
+        exclude_id: int | None = None,
+    ) -> bool:
+        normalized_name = name.strip().casefold()
+        normalized_city = city.strip().casefold()
+        normalized_country = country.strip().casefold()
+
+        for restaurant in self._restaurants:
+            if exclude_id is not None and restaurant.id == exclude_id:
+                continue
+
+            if (
+                restaurant.name.strip().casefold() == normalized_name
+                and restaurant.city.strip().casefold() == normalized_city
+                and restaurant.country.strip().casefold() == normalized_country
+            ):
+                return True
+
+        return False
 
     def create(self, payload: RestaurantCreate) -> Restaurant:
-        """Create a new restaurant and return it."""
-        restaurant = Restaurant(id=self._next_id, **payload.model_dump())
-        self._items[restaurant.id] = restaurant
+        if self._is_duplicate(payload.name, payload.city, payload.country):
+            raise ValueError("Restaurant already exists in your visited list")
+
+        restaurant = Restaurant(
+            id=self._next_id,
+            name=payload.name,
+            city=payload.city,
+            country=payload.country,
+            cuisine=payload.cuisine,
+            price_level=payload.price_level,
+            rating=payload.rating,
+            is_open=payload.is_open,
+        )
+        self._restaurants.append(restaurant)
         self._next_id += 1
         return restaurant
 
-    def get(self, restaurant_id: int) -> Restaurant | None:
-        """Return a restaurant by ID, or None if not found."""
-        return self._items.get(restaurant_id)
-
     def update(self, restaurant_id: int, payload: RestaurantCreate) -> Restaurant | None:
-        """Update an existing restaurant and return it, or None if not found."""
-        existing_restaurant = self.get(restaurant_id)
-        if existing_restaurant is None:
-            return None
+        for index, restaurant in enumerate(self._restaurants):
+            if restaurant.id == restaurant_id:
+                if self._is_duplicate(
+                    payload.name,
+                    payload.city,
+                    payload.country,
+                    exclude_id=restaurant_id,
+                ):
+                    raise ValueError("Restaurant already exists in your visited list")
 
-        updated_restaurant = Restaurant(id=restaurant_id, **payload.model_dump())
-        self._items[restaurant_id] = updated_restaurant
-        return updated_restaurant
+                updated_restaurant = Restaurant(
+                    id=restaurant_id,
+                    name=payload.name,
+                    city=payload.city,
+                    country=payload.country,
+                    cuisine=payload.cuisine,
+                    price_level=payload.price_level,
+                    rating=payload.rating,
+                    is_open=payload.is_open,
+                )
+                self._restaurants[index] = updated_restaurant
+                return updated_restaurant
+        return None
 
     def delete(self, restaurant_id: int) -> bool:
-        """Delete a restaurant by ID. Return True if deleted, otherwise False."""
-        if restaurant_id in self._items:
-            del self._items[restaurant_id]
-            return True
+        for index, restaurant in enumerate(self._restaurants):
+            if restaurant.id == restaurant_id:
+                del self._restaurants[index]
+                return True
         return False
 
     def clear(self) -> None:
-        """Remove all restaurants. Useful for tests."""
-        self._items.clear()
+        self._restaurants.clear()
         self._next_id = 1

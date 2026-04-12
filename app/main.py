@@ -1,11 +1,23 @@
 from __future__ import annotations
 
 from fastapi import FastAPI, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.dependencies import RepositoryDep
 from app.models import Restaurant, RestaurantCreate
 
 app = FastAPI(title="Restaurant Finder", version="0.1.0")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/health")
@@ -26,7 +38,13 @@ def create_restaurant(
     repository: RepositoryDep,
 ) -> Restaurant:
     """Create a new restaurant."""
-    return repository.create(payload)
+    try:
+        return repository.create(payload)
+    except ValueError as error:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=str(error),
+        ) from error
 
 
 @app.get("/restaurants/{restaurant_id}", response_model=Restaurant)
@@ -48,7 +66,14 @@ def update_restaurant(
     repository: RepositoryDep,
 ) -> Restaurant:
     """Update an existing restaurant."""
-    updated_restaurant = repository.update(restaurant_id, payload)
+    try:
+        updated_restaurant = repository.update(restaurant_id, payload)
+    except ValueError as error:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=str(error),
+        ) from error
+
     if updated_restaurant is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
