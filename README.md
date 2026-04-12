@@ -1,12 +1,14 @@
 # Restaurant Finder
 
 ## Description
-Restaurant Finder is a FastAPI-based backend project for managing restaurant data.
+Restaurant Finder is a full-stack web application for discovering recommended restaurants and managing a personal list of restaurants the user has visited.
 
-This version represents the backend foundation of the system and supports full CRUD operations for restaurants.
+The project started as a FastAPI backend and was later extended with a React frontend that communicates only with the backend API.
 
-## Stage
-This repository currently contains **Stage A** of the project.
+## Current Stage
+This repository currently includes:
+- **Stage A**: FastAPI backend
+- **Stage B**: React frontend
 
 Stage A includes:
 - FastAPI backend
@@ -16,81 +18,132 @@ Stage A includes:
 - automated tests with pytest
 - Docker support
 
-The repository includes automated tests for Stage A.
+Stage B includes:
+- React frontend with Vite
+- Discover page for browsing recommended restaurants
+- My Visited page for managing restaurants the user has visited
+- search and filtering in the discovery section
+- create, update, and delete operations through the UI
+- Docker Compose support for running frontend and backend together
 
 ## Prerequisites
 Before running the project, make sure the following tools are installed:
 
-- Python 3.13 
+- Python 3.13
 - `uv`
-- Docker Desktop, if you want to run the project in a container
+- Node.js and npm
+- Docker Desktop, if you want to run the project in containers
 
 ## Features
+
+### Backend
 - FastAPI backend
 - CRUD operations for restaurants
-- Input validation with Pydantic
-- In-memory repository
-- Dependency injection
-- Automated tests with pytest
+- input validation with Pydantic
+- in-memory repository
+- dependency injection
 - Swagger/OpenAPI documentation
+- automated tests with pytest
+
+### Frontend
+- React frontend with Vite
+- navigation bar
+- Discover page
+- My Visited page
+- search by restaurant name
+- filter by country
+- add a restaurant to My Visited
+- create visited restaurants manually
+- update visited restaurants
+- delete visited restaurants
+
+### Run Support
 - Docker support
+- Docker Compose support for frontend and backend together
 
 ## Technologies
 - Python
 - FastAPI
 - Pydantic
 - pytest
-- uv
+- React
+- Vite
+- JavaScript
 - Docker
+- Docker Compose
+- uv
 
-## Run the Project
-Run the backend locally with:
+## Run the Backend Locally
+From the project root:
 
 ```bash
 uv run uvicorn app.main:app --reload
 ```
 
-The application will run locally at:
+The backend will run at:
 
 ```text
 http://127.0.0.1:8000
 ```
 
-## API Documentation
-FastAPI automatically provides interactive Swagger/OpenAPI documentation.
+## Backend API Documentation
+FastAPI provides interactive Swagger/OpenAPI documentation.
 
-After running the server, open:
+Open:
 
 ```text
 http://127.0.0.1:8000/docs
 ```
 
-## Run Tests
-Run all tests with:
+## Run Backend Tests
+Run all backend tests with:
 
 ```bash
 uv run pytest tests -v
 ```
 
-## Run with Docker
+## Run the Frontend Locally
+From the `frontend` folder:
 
-### Build the image
 ```bash
-docker build -t restaurant-finder .
+npm install
+npm run dev
 ```
 
-### Run the container
-```bash
-docker run --rm -p 8000:8000 --name restaurant-finder restaurant-finder
+The frontend will run at:
+
+```text
+http://127.0.0.1:5173
 ```
 
-After the container starts, open:
+## Run with Docker Compose
+From the project root:
+
+```bash
+docker compose up --build
+```
+
+After the containers start:
+
+Frontend:
+
+```text
+http://127.0.0.1:5173
+```
+
+Backend:
+
+```text
+http://127.0.0.1:8000
+```
+
+Backend API Docs:
 
 ```text
 http://127.0.0.1:8000/docs
 ```
 
-## Available Endpoints
+## Available Backend Endpoints
 
 ### Health Check
 - `GET /health`
@@ -119,46 +172,63 @@ Example JSON for creating a restaurant:
 
 ## Project Structure
 ```text
-EASS-PROJECT-Resturant-Finder/
+EASS-PROJECT-Restaurant-Finder/
 |-- app/
 |   |-- __init__.py
 |   |-- main.py
 |   |-- models.py
 |   |-- repository.py
 |   `-- dependencies.py
+|-- frontend/
+|   |-- public/
+|   |-- src/
+|   |   |-- components/
+|   |   |-- data/
+|   |   |-- pages/
+|   |   |-- api.js
+|   |   |-- App.css
+|   |   |-- App.jsx
+|   |   `-- main.jsx
+|   |-- .gitignore
+|   |-- eslint.config.js
+|   |-- index.html
+|   |-- package-lock.json
+|   |-- package.json
+|   `-- vite.config.js
 |-- tests/
 |   |-- __init__.py
 |   |-- conftest.py
 |   `-- test_restaurants.py
+|-- .dockerignore
 |-- .gitignore
-|-- Dockerfile
+|-- backend.Dockerfile
+|-- docker-compose.yml
+|-- frontend.Dockerfile
 |-- plan.md
 |-- pyproject.toml
-|-- uv.lock
-`-- README.md
+|-- README.md
+|-- restaurant_requests.http
+`-- uv.lock
 ```
+
 ## REST Client Requests
-The file `restaurant_requests.http` contains sample HTTP requests for manually testing the API endpoints.
+The file `restaurant_requests.http` contains sample HTTP requests for manually testing the backend API endpoints.
 It can be used with the REST Client extension in VS Code.
 
 ## Current Status
-This stage includes the backend only.
-
 The project currently supports:
-- restaurant CRUD operations
-- request validation
-- automated testing
-- Docker execution
+- backend CRUD operations for restaurants
+- validation and automated backend tests
+- a React frontend for restaurant discovery
+- a personal visited restaurants list
+- local frontend and backend development
+- Docker Compose execution for the full system
 
 At this stage:
-- data is stored in memory
-- there is no frontend yet
+- visited restaurants are stored in memory
 - there is no persistent database yet
-
-## Notes
-The current repository folder name uses the spelling `Resturant`.
-The product name used in the project documentation is `Restaurant Finder`.
-This naming inconsistency can be cleaned up later.
+- authentication is not included
+- advanced live external integrations are not included
 
 ## Author
 Adi Beker

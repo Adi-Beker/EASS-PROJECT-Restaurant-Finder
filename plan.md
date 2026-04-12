@@ -1,11 +1,11 @@
 # Restaurant Finder – Project Plan
 
 ## 1. Project Overview
-Restaurant Finder is a simple software project for managing restaurant data.
+Restaurant Finder is a web application for discovering recommended restaurants and managing a personal list of restaurants the user has visited.
 
 The project is planned as a multi-stage system:
 - Stage A: backend development with FastAPI
-- Stage B: frontend development with Streamlit
+- Stage B: frontend development with React
 - Stage C: persistent storage and a more complete local system
 
 The goal is to build a clean and understandable project that can grow gradually while keeping the system simple.
@@ -13,21 +13,28 @@ The goal is to build a clean and understandable project that can grow gradually 
 ---
 
 ## 2. Project Idea
-The system focuses on one main entity: **Restaurant**.
+The system combines two simple goals:
 
-It will allow users to:
-- create restaurants
-- view all restaurants
-- get a restaurant by id
-- update restaurant details
-- delete restaurants
+- discovering recommended restaurants
+- managing a personal visited restaurants list
 
-In later stages, the system will also support a simple frontend for browsing and managing restaurant data.
+The application allows users to:
+- explore recommended restaurants
+- search restaurants by name
+- filter restaurants by country
+- add restaurants to a personal visited list
+- create visited restaurants manually
+- update visited restaurant details
+- delete restaurants from the visited list
+
+This creates a simple but realistic product that combines discovery and personal management.
 
 ---
 
 ## 3. Main Entity
-Each restaurant will include the following fields:
+The main backend entity is **Restaurant**.
+
+Each restaurant in the visited list includes the following fields:
 
 - `id`
 - `name`
@@ -38,14 +45,14 @@ Each restaurant will include the following fields:
 - `rating`
 - `is_open`
 
-These fields are enough to build a realistic project without adding unnecessary complexity.
+These fields are enough to support useful restaurant management without unnecessary complexity.
 
 ---
 
 ## 4. Validation Rules
-The backend will validate incoming data before saving it.
+The backend validates incoming data before saving it.
 
-Planned validation rules:
+Validation rules:
 - `name` must not be empty
 - `city` must not be empty
 - `country` must not be empty
@@ -63,12 +70,12 @@ Basic normalization may also be applied, such as:
 ## 5. Design Approach
 The project follows a simple layered structure:
 
-- API layer
+- backend API layer
 - model/schema layer
 - repository layer
-- frontend layer in a later stage
+- frontend UI layer
 
-The backend will handle API logic, the repository will handle data access, and the frontend will communicate only with the backend.
+The backend handles API logic, the repository handles data access, and the frontend communicates only with the backend API.
 
 This keeps the project clear and supports separation of responsibilities.
 
@@ -79,7 +86,7 @@ This keeps the project clear and supports separation of responsibilities.
 ### Stage A – Backend
 Stage A focuses on building the backend with FastAPI.
 
-Planned goals:
+Completed goals:
 - create a working FastAPI application
 - implement restaurant CRUD operations
 - validate input data
@@ -87,29 +94,29 @@ Planned goals:
 - write automated tests
 - support Docker execution
 
-At this stage, storage will be in memory only.
+At this stage, storage is in memory only.
 
 ### Stage B – Frontend
-Stage B focuses on building a simple Streamlit interface.
+Stage B focuses on building a React frontend.
 
-Planned goals:
-- display restaurants
-- add a restaurant
-- update restaurant data
-- delete a restaurant
-- show backend status
-- support simple filtering if needed
-
-The frontend will communicate only with the backend API.
+Completed or current goals:
+- build a separate frontend application
+- provide a Discover page for restaurant recommendations
+- support search by restaurant name
+- support filtering by country
+- provide a My Visited page
+- support create, update, and delete operations through the UI
+- connect the frontend only to the backend API
+- support Docker Compose for running frontend and backend together
 
 ### Stage C – Extended Version
 Stage C focuses on improving the project into a more complete local system.
 
 Planned goals:
 - replace in-memory storage with persistent storage
-- improve documentation and setup
-- run the system as a more complete local solution
-- add one meaningful improvement such as simple search or filtering
+- improve the UI and overall user experience
+- improve documentation and project setup
+- add one meaningful enhancement such as richer filtering or improved restaurant data management
 
 ---
 
@@ -125,12 +132,35 @@ Planned goals:
 - `PUT /restaurants/{restaurant_id}`
 - `DELETE /restaurants/{restaurant_id}`
 
-These endpoints are enough for the first version of the project.
+These endpoints are enough for the current version of the project.
 
 ---
 
-## 8. Testing Plan
-The project will include automated tests for:
+## 8. Frontend Features
+
+### Discover Page
+The Discover page allows users to:
+- browse recommended restaurants
+- search restaurants by name
+- filter restaurants by country
+- add a restaurant to the visited list
+
+### My Visited Page
+The My Visited page allows users to:
+- view all visited restaurants
+- create a visited restaurant manually
+- update an existing visited restaurant
+- delete a visited restaurant
+
+### Navigation
+The frontend includes a simple navigation bar with:
+- Discover
+- My Visited
+
+---
+
+## 9. Testing Plan
+The backend includes automated tests for:
 - health endpoint
 - create restaurant
 - list restaurants
@@ -144,14 +174,16 @@ The purpose of testing is to keep the backend stable and reliable.
 
 ---
 
-## 9. Technology Stack
-Planned technologies:
+## 10. Technology Stack
+Technologies used or planned:
 - Python
 - FastAPI
 - Pydantic
 - pytest
-- Streamlit
+- React
+- Vite
 - Docker
+- Docker Compose
 - uv
 
 Possible later addition:
@@ -159,9 +191,7 @@ Possible later addition:
 
 ---
 
-## 10. Project Structure
-The project starts with a backend in Stage A and expands in later stages.
-
+## 11. Project Structure
 A possible project structure is:
 
 ```text
@@ -171,41 +201,24 @@ restaurant_finder/
 |   |-- models.py
 |   |-- repository.py
 |   `-- dependencies.py
+|-- frontend/
+|   |-- src/
+|   |   |-- components/
+|   |   |-- data/
+|   |   |-- pages/
+|   |   |-- api.js
+|   |   |-- App.jsx
+|   |   |-- App.css
+|   |   `-- main.jsx
+|   |-- package.json
+|   `-- vite.config.js
 |-- tests/
 |   |-- conftest.py
 |   `-- test_restaurants.py
-|-- frontend/
-|   `-- streamlit_app.py
-|-- Dockerfile
+|-- backend.Dockerfile
+|-- frontend.Dockerfile
+|-- docker-compose.yml
 |-- README.md
 |-- plan.md
 |-- pyproject.toml
 `-- uv.lock
-```
-
-In Stage A, the main focus is the backend and tests.
-The `frontend/` folder is planned for Stage B and may be added later when the Streamlit interface is implemented.
-
----
-
-## 11. Scope Boundaries
-To keep the project simple and realistic, the following are out of scope for the first version:
-- mobile application
-- CLI client
-- reservation system
-- payment system
-- delivery system
-- authentication
-- advanced map integration
-- external API integration as a core dependency
-
-This keeps the project aligned with the course level and with KISS principles.
-
----
-
-## 12. Summary
-Restaurant Finder is a simple student-level software project based on one clear entity and standard CRUD operations.
-
-The project starts with a clean backend, continues with a simple frontend, and later evolves into a more complete local system.
-
-The main focus is to keep the project clear, modular, and easy to understand while following good software design practices.
